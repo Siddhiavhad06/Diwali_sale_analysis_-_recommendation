@@ -1,0 +1,26 @@
+import streamlit as st
+import pandas as pd
+import chardet
+
+def app():
+    st.title("Data Upload & Analysis")
+    
+    # File uploader
+    uploaded_file = st.file_uploader("Upload your Diwali sales data (CSV)", type=["csv"])
+
+    if uploaded_file is not None:
+        # Detect encoding
+        rawdata = uploaded_file.read()
+        result = chardet.detect(rawdata)
+        encoding = result['encoding']
+        
+        # Move the cursor back to the beginning of the file
+        uploaded_file.seek(0)
+
+        # Read the data with the detected encoding
+        try:
+            data = pd.read_csv(uploaded_file, encoding=encoding)
+            st.success("File loaded successfully!")
+            st.dataframe(data.head())
+        except Exception as e:
+            st.error(f"Error reading the CSV file: {e}")
